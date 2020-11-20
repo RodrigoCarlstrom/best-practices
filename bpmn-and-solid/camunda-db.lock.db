@@ -1,0 +1,6 @@
+#FileLock
+#Fri Nov 20 15:17:01 BRT 2020
+hostName=mbp-de-rodrigo
+id=175e6dfa9b9700ac668fe750ef759c86f15812ce356
+method=file
+server=192.168.15.52\:53253

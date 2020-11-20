@@ -200,7 +200,7 @@
         </bpmn:dataOutputAssociation>
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="RecurrencySequenceFlow" name="Recurrent" sourceRef="Gateway_1kt3u0o" targetRef="GenerateRecurrenceContractTask">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${token.isRecurrent()}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${token.recurrent()}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:serviceTask id="GenerateRecurrenceContractTask" name="Generate Recurrence Contract" camunda:asyncBefore="true" camunda:delegateExpression="${generateRecurrenceContractDelegate}">
         <bpmn:incoming>RecurrencySequenceFlow</bpmn:incoming>

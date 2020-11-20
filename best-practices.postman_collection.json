@@ -1,0 +1,106 @@
+{
+	"info": {
+		"_postman_id": "6217d23d-1a97-4054-82c0-eeddd71564d4",
+		"name": "examples",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "digital-merketing",
+			"item": [
+				{
+					"name": "Start Process",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"variables\": {\n        \"token\": {\n            \"value\": \"{\\\"recipient\\\":\\\"rodrigocarlstrom@gmail.com\\\",\\\"campaign\\\":{\\\"name\\\":\\\"Natal feliz!\\\",\\\"content\\\":\\\"Participe da campanha Natal Feliz! Cadastre e gache 30% de desconto!\\\",\\\"followUpTimerCicle\\\":\\\"R3/P5D\\\",\\\"expiration\\\":\\\"2020-12-24T12:00:00.000\\\"}}\",\n            \"type\": \"Object\",\n            \"valueInfo\": {\n                \"objectTypeName\": \"br.com.evoluo.example.marketing.digital.model.offer.MailOffer\",\n                \"serializationDataFormat\": \"application/json\"\n            }\n        }\n    },\n    \"businessKey\": \"1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/engine-rest/process-definition/key/DigitalMarketingProcess/start",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"engine-rest",
+								"process-definition",
+								"key",
+								"DigitalMarketingProcess",
+								"start"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interested",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"messageName\" : \"getInterested\",\n    \"businessKey\" : \"1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/engine-rest/message",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"engine-rest",
+								"message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fill in contact form",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"messageName\" : \"fillInContactForm\",\n    \"businessKey\" : \"1234\",\n    \"processVariables\": {\n        \"token\": {\n            \"value\": \"{\\\"recipient\\\":\\\"rodrigocarlstrom@gmail.com\\\",\\\"campaign\\\":{\\\"name\\\":\\\"Natal feliz!\\\",\\\"content\\\":\\\"Participe da campanha Natal Feliz! Cadastre e gache 30% de desconto!\\\",\\\"followUpTimerCicle\\\":\\\"R3\\/P5D\\\",\\\"expiration\\\":\\\"2020-12-24T12:00:00.000\\\"},\\\"contact\\\":{\\\"firstName\\\":\\\"Rodrigo\\\",\\\"lastName\\\":\\\"Carlstrom\\\",\\\"email\\\":\\\"rodrigocarlstrom@gmail.com\\\",\\\"phoneNumber\\\":\\\"(19) 98116-8066\\\",\\\"address\\\":{\\\"street\\\":\\\"Rua Dr. Luiz Migliano, 190\\\",\\\"city\\\":\\\"S\\u00e3o Paulo\\\",\\\"state\\\":\\\"SP\\\",\\\"zipCode\\\":5711000}}}\",\n            \"type\": \"Object\",\n            \"valueInfo\": {\n                \"objectTypeName\": \"br.com.evoluo.example.marketing.digital.model.Prospect\",\n                \"serializationDataFormat\": \"application/json\"\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/engine-rest/message",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"engine-rest",
+								"message"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

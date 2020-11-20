@@ -1,12 +1,12 @@
 package br.com.evoluo.example.commons.services;
 
-import javax.inject.Named;
+import org.springframework.stereotype.Service;
 
 import br.com.evoluo.example.commons.SimpleLogger;
 import br.com.evoluo.example.marketing.digital.Attractable;
 import br.com.evoluo.example.marketing.digital.model.offer.MailOffer;
 
-@Named
+@Service
 public class MailService {
 
 	private static final SimpleLogger log = SimpleLogger.getLogger(MailService.class.getName());
@@ -20,6 +20,7 @@ public class MailService {
 
 	public void send(String to, String subject, String text) {
 		log.start("send", to, subject, text);
+		//TODO: Implementar método de envio de e-mail
 		log.end("send");
 	}
 

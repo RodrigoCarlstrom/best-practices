@@ -82,10 +82,10 @@ public class Sale extends Lead implements Contractable, Serializable {
 	}
 
 	@Override
-	public Boolean isRecurrent() {
-		log.start("isRecurrent");
+	public Boolean recurrent() {
+		log.start("recurrent");
 		Boolean ret = !ValidateUtils.isNull(this.contractType) && this.contractType.equals(ContractType.RECURRENT);
-		log.ret("isRecurrent", ret);
+		log.ret("recurrent", ret);
 		return ret;
 	}
 
