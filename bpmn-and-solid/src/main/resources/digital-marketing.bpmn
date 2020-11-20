@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0mtijqx" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.3" camunda:diagramRelationId="4f1f1877-fdf2-4cfa-9f02-312b6ba6643f">
+  <bpmn:process id="DigitalMarketingProcess" name="Digital Marketing" isExecutable="true">
+    <bpmn:subProcess id="SalesFunnelUpdateSubProcess" name="Sales funnel update" triggeredByEvent="true">
+      <bpmn:startEvent id="StatusChangedStartEvent" name="Status changed" isInterrupting="false">
+        <bpmn:outgoing>Flow_0zqxhpd</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_06iapyl" messageRef="Message_1sedv8u" />
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_0zqxhpd" sourceRef="StatusChangedStartEvent" targetRef="UpdateSalesFunnelTask" />
+      <bpmn:serviceTask id="UpdateSalesFunnelTask" name="Update sales funnel" camunda:asyncBefore="true" camunda:delegateExpression="${updateSalesFunnelDelegate}">
+        <bpmn:incoming>Flow_0zqxhpd</bpmn:incoming>
+        <bpmn:outgoing>Flow_1o7pgq4</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="SalesFunnelUpdatedEndEvent" name="Sales funnel updated">
+        <bpmn:incoming>Flow_1o7pgq4</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1o7pgq4" sourceRef="UpdateSalesFunnelTask" targetRef="SalesFunnelUpdatedEndEvent" />
+    </bpmn:subProcess>
+    <bpmn:endEvent id="SalesLostEndEvent" name="Sales lost">
+      <bpmn:incoming>Flow_1unglhh</bpmn:incoming>
+      <bpmn:incoming>Flow_1w3qcrg</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0hpkhe1" messageRef="Message_1sedv8u" />
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="CanceledBoundaryEvent" name="Canceled" attachedToRef="Activity_0e3wrd9">
+      <bpmn:outgoing>Flow_1unglhh</bpmn:outgoing>
+      <bpmn:cancelEventDefinition id="CancelEventDefinition_0l801jf" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1unglhh" sourceRef="CanceledBoundaryEvent" targetRef="SalesLostEndEvent" />
+    <bpmn:sequenceFlow id="Flow_1w3qcrg" sourceRef="CampaignEndedBoundaryEvent" targetRef="SalesLostEndEvent" />
+    <bpmn:boundaryEvent id="CampaignEndedBoundaryEvent" name="Campaign&#10;ended" attachedToRef="Activity_0e3wrd9">
+      <bpmn:outgoing>Flow_1w3qcrg</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1vk3c5o">
+        <bpmn:timeDate xsi:type="bpmn:tFormalExpression">${token.campaign.expiration}</bpmn:timeDate>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:transaction id="Activity_0e3wrd9">
+      <bpmn:incoming>Flow_1q1k9q7</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ubwmj6</bpmn:outgoing>
+      <bpmn:serviceTask id="SendOfferTask" name="Send offer" camunda:asyncBefore="true" camunda:delegateExpression="${sendOfferDelegate}">
+        <bpmn:incoming>Flow_1ei72t6</bpmn:incoming>
+        <bpmn:outgoing>Flow_0qtokxa</bpmn:outgoing>
+        <bpmn:property id="Property_0u5gswi" name="__targetRef_placeholder" />
+        <bpmn:dataInputAssociation id="DataInputAssociation_0veym9o">
+          <bpmn:sourceRef>AttractableOfferDataObjectReference</bpmn:sourceRef>
+          <bpmn:targetRef>Property_0u5gswi</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
+      </bpmn:serviceTask>
+      <bpmn:receiveTask id="GetInterestedTask" name="Get interested" messageRef="Message_0g940ri">
+        <bpmn:extensionElements>
+          <camunda:executionListener delegateExpression="${getInterestedEndListener}" event="end" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0qtokxa</bpmn:incoming>
+        <bpmn:outgoing>Flow_0t87ovz</bpmn:outgoing>
+        <bpmn:dataOutputAssociation id="DataOutputAssociation_0zbl2sx">
+          <bpmn:targetRef>FillableProspectDataObjectReference</bpmn:targetRef>
+        </bpmn:dataOutputAssociation>
+      </bpmn:receiveTask>
+      <bpmn:serviceTask id="ResendOfferByEmailTask" name="Resend offer by email" camunda:asyncBefore="true" camunda:delegateExpression="${followUpDelegate}">
+        <bpmn:incoming>Flow_1st0mr0</bpmn:incoming>
+      </bpmn:serviceTask>
+      <bpmn:intermediateThrowEvent id="ProspectAttractedEvent" name="Prospect attracted">
+        <bpmn:incoming>Flow_0t87ovz</bpmn:incoming>
+        <bpmn:outgoing>Flow_13qp3ol</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_0ivr4pc" messageRef="Message_1sedv8u" />
+      </bpmn:intermediateThrowEvent>
+      <bpmn:serviceTask id="FollowupFillingContactFormTask" name="Follow-up filling contact form" camunda:asyncBefore="true" camunda:delegateExpression="${followUpDelegate}">
+        <bpmn:incoming>Flow_18isr1f</bpmn:incoming>
+      </bpmn:serviceTask>
+      <bpmn:intermediateThrowEvent id="LeadConvertedEvent" name="Lead converted">
+        <bpmn:incoming>Flow_1ipu4f0</bpmn:incoming>
+        <bpmn:outgoing>Flow_1tt3kux</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_1ybdioa" messageRef="Message_1sedv8u" />
+      </bpmn:intermediateThrowEvent>
+      <bpmn:userTask id="NegotiateSaleTask" name="Negotiate sale" camunda:formKey="embedded:app:forms/negotiate-sale.html">
+        <bpmn:incoming>Flow_1tt3kux</bpmn:incoming>
+        <bpmn:outgoing>Flow_1l18w2c</bpmn:outgoing>
+        <bpmn:property id="Property_04qdfac" name="__targetRef_placeholder" />
+        <bpmn:dataInputAssociation id="DataInputAssociation_0259e7g">
+          <bpmn:sourceRef>NegotiableLeadDataObjectReference</bpmn:sourceRef>
+          <bpmn:targetRef>Property_04qdfac</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
+        <bpmn:dataOutputAssociation id="DataOutputAssociation_14op3gx">
+          <bpmn:targetRef>ContractableSaleDataObjectReference</bpmn:targetRef>
+        </bpmn:dataOutputAssociation>
+      </bpmn:userTask>
+      <bpmn:startEvent id="Event_0rjj1pz">
+        <bpmn:outgoing>Flow_1ei72t6</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:boundaryEvent id="SendFailBoundaryEvent" name="Send fail" attachedToRef="SendOfferTask">
+        <bpmn:outgoing>Flow_01ydda5</bpmn:outgoing>
+        <bpmn:errorEventDefinition id="ErrorEventDefinition_1c1cfi5" />
+      </bpmn:boundaryEvent>
+      <bpmn:boundaryEvent id="EveryTwoDaysBoundaryEvent" name="Every&#10;two days" cancelActivity="false" attachedToRef="GetInterestedTask">
+        <bpmn:outgoing>Flow_1st0mr0</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_1c3tu8i">
+          <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">${token.campaign.followUpTimerCicle}</bpmn:timeCycle>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+      <bpmn:boundaryEvent id="EveryDayBoundaryEvent2" name="Every&#10;day" cancelActivity="false" attachedToRef="FillInContactFormTask">
+        <bpmn:outgoing>Flow_18isr1f</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_1u76l9r">
+          <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">${token.campaign.followUpTimerCicle}</bpmn:timeCycle>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_0qtokxa" sourceRef="SendOfferTask" targetRef="GetInterestedTask" />
+      <bpmn:sequenceFlow id="Flow_0t87ovz" sourceRef="GetInterestedTask" targetRef="ProspectAttractedEvent" />
+      <bpmn:sequenceFlow id="Flow_1st0mr0" sourceRef="EveryTwoDaysBoundaryEvent" targetRef="ResendOfferByEmailTask" />
+      <bpmn:sequenceFlow id="Flow_13qp3ol" sourceRef="ProspectAttractedEvent" targetRef="FillInContactFormTask" />
+      <bpmn:sequenceFlow id="Flow_18isr1f" sourceRef="EveryDayBoundaryEvent2" targetRef="FollowupFillingContactFormTask" />
+      <bpmn:sequenceFlow id="Flow_1ipu4f0" sourceRef="FillInContactFormTask" targetRef="LeadConvertedEvent" />
+      <bpmn:sequenceFlow id="Flow_1tt3kux" sourceRef="LeadConvertedEvent" targetRef="NegotiateSaleTask" />
+      <bpmn:sequenceFlow id="Flow_1ei72t6" sourceRef="Event_0rjj1pz" targetRef="SendOfferTask" />
+      <bpmn:sequenceFlow id="Flow_01ydda5" sourceRef="SendFailBoundaryEvent" targetRef="CancelEndEvent" />
+      <bpmn:endEvent id="CancelEndEvent" name="Cancel">
+        <bpmn:incoming>Flow_01ydda5</bpmn:incoming>
+        <bpmn:cancelEventDefinition id="CancelEventDefinition_0h6sat3" />
+      </bpmn:endEvent>
+      <bpmn:boundaryEvent id="EveryDayBoundaryEvent1" name="Every&#10;day" cancelActivity="false" attachedToRef="NegotiateSaleTask">
+        <bpmn:outgoing>Flow_10n3wc7</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_054452l">
+          <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">${token.campaign.followUpTimerCicle}</bpmn:timeCycle>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_10n3wc7" sourceRef="EveryDayBoundaryEvent1" targetRef="FollowupCloseSaleTask" />
+      <bpmn:serviceTask id="FollowupCloseSaleTask" name="Follow-up close sale" camunda:asyncBefore="true" camunda:delegateExpression="${followUpDelegate}">
+        <bpmn:incoming>Flow_10n3wc7</bpmn:incoming>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1l18w2c" sourceRef="NegotiateSaleTask" targetRef="Gateway_0omfg19" />
+      <bpmn:intermediateThrowEvent id="SaleConqueredEvent" name="Sale conquered">
+        <bpmn:incoming>Flow_0a0eebx</bpmn:incoming>
+        <bpmn:outgoing>Flow_1944r1l</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_0p4le60" messageRef="Message_1sedv8u" />
+      </bpmn:intermediateThrowEvent>
+      <bpmn:sequenceFlow id="Flow_1944r1l" sourceRef="SaleConqueredEvent" targetRef="Gateway_1kt3u0o" />
+      <bpmn:serviceTask id="SubmitContractTask" name="Submit contract" camunda:asyncBefore="true" camunda:delegateExpression="${submitContractDelegate}">
+        <bpmn:incoming>Flow_01klt5d</bpmn:incoming>
+        <bpmn:outgoing>Flow_1fx4tkg</bpmn:outgoing>
+        <bpmn:property id="Property_0pqu2vx" name="__targetRef_placeholder" />
+        <bpmn:dataInputAssociation id="DataInputAssociation_1kpggox">
+          <bpmn:sourceRef>SignableSingleContractDataObjectReference</bpmn:sourceRef>
+          <bpmn:targetRef>Property_0pqu2vx</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
+        <bpmn:dataInputAssociation id="DataInputAssociation_1ya1o3q">
+          <bpmn:sourceRef>SignableRecurrentContractDataObjectReference</bpmn:sourceRef>
+          <bpmn:targetRef>Property_0pqu2vx</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1fx4tkg" sourceRef="SubmitContractTask" targetRef="ReceiveSubscriptionTask" />
+      <bpmn:receiveTask id="ReceiveSubscriptionTask" name="Receive subscription" messageRef="Message_1p3x0w0">
+        <bpmn:incoming>Flow_1fx4tkg</bpmn:incoming>
+        <bpmn:outgoing>Flow_0sggiy5</bpmn:outgoing>
+        <bpmn:dataOutputAssociation id="DataOutputAssociation_00y2y20">
+          <bpmn:targetRef>ProvisionableSignedContractDataObjectReference</bpmn:targetRef>
+        </bpmn:dataOutputAssociation>
+      </bpmn:receiveTask>
+      <bpmn:boundaryEvent id="EveryDayBoundaryEvent" name="Every&#10;day" cancelActivity="false" attachedToRef="ReceiveSubscriptionTask">
+        <bpmn:outgoing>Flow_00svbvf</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_1ye4hmn">
+          <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">${token.campaign.followUpTimerCicle}</bpmn:timeCycle>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_00svbvf" sourceRef="EveryDayBoundaryEvent" targetRef="FollowupContractSignatureTask" />
+      <bpmn:serviceTask id="FollowupContractSignatureTask" name="Follow-up contract signature" camunda:asyncBefore="true" camunda:delegateExpression="${followUpDelegate}">
+        <bpmn:incoming>Flow_00svbvf</bpmn:incoming>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="Event_0lopvfc">
+        <bpmn:incoming>Flow_0sggiy5</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0sggiy5" sourceRef="ReceiveSubscriptionTask" targetRef="Event_0lopvfc" />
+      <bpmn:exclusiveGateway id="Gateway_0omfg19" camunda:asyncBefore="true" default="Flow_0a0eebx">
+        <bpmn:incoming>Flow_1l18w2c</bpmn:incoming>
+        <bpmn:outgoing>Flow_0a0eebx</bpmn:outgoing>
+        <bpmn:outgoing>GiveUpSequenceFlow</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_0a0eebx" sourceRef="Gateway_0omfg19" targetRef="SaleConqueredEvent" />
+      <bpmn:sequenceFlow id="GiveUpSequenceFlow" name="Give&#10;up" sourceRef="Gateway_0omfg19" targetRef="CancelEndEvent1">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${token.giveUp()}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:endEvent id="CancelEndEvent1" name="Cancel">
+        <bpmn:incoming>GiveUpSequenceFlow</bpmn:incoming>
+        <bpmn:cancelEventDefinition id="CancelEventDefinition_0rbs7mm" />
+      </bpmn:endEvent>
+      <bpmn:exclusiveGateway id="Gateway_1kt3u0o" default="SingleSequenceFlow">
+        <bpmn:incoming>Flow_1944r1l</bpmn:incoming>
+        <bpmn:outgoing>SingleSequenceFlow</bpmn:outgoing>
+        <bpmn:outgoing>RecurrencySequenceFlow</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="SingleSequenceFlow" name="Single" sourceRef="Gateway_1kt3u0o" targetRef="GenerateSingleContractTask" />
+      <bpmn:sequenceFlow id="Flow_0uvbyk6" sourceRef="GenerateSingleContractTask" targetRef="Gateway_162uu6h" />
+      <bpmn:serviceTask id="GenerateSingleContractTask" name="Generate single contract" camunda:asyncBefore="true" camunda:delegateExpression="${generateSingleContractDelegate}">
+        <bpmn:incoming>SingleSequenceFlow</bpmn:incoming>
+        <bpmn:outgoing>Flow_0uvbyk6</bpmn:outgoing>
+        <bpmn:property id="Property_0w8kmla" name="__targetRef_placeholder" />
+        <bpmn:dataInputAssociation id="DataInputAssociation_19oijd4">
+          <bpmn:sourceRef>ContractableSaleDataObjectReference</bpmn:sourceRef>
+          <bpmn:targetRef>Property_0w8kmla</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
+        <bpmn:dataOutputAssociation id="DataOutputAssociation_0b8srzb">
+          <bpmn:targetRef>SignableSingleContractDataObjectReference</bpmn:targetRef>
+        </bpmn:dataOutputAssociation>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="RecurrencySequenceFlow" name="Recurrent" sourceRef="Gateway_1kt3u0o" targetRef="GenerateRecurrenceContractTask">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${token.isRecurrent()}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:serviceTask id="GenerateRecurrenceContractTask" name="Generate Recurrence Contract" camunda:asyncBefore="true" camunda:delegateExpression="${generateRecurrenceContractDelegate}">
+        <bpmn:incoming>RecurrencySequenceFlow</bpmn:incoming>
+        <bpmn:outgoing>Flow_1d5v0qy</bpmn:outgoing>
+        <bpmn:dataOutputAssociation id="DataOutputAssociation_14vzoet">
+          <bpmn:targetRef>SignableRecurrentContractDataObjectReference</bpmn:targetRef>
+        </bpmn:dataOutputAssociation>
+      </bpmn:serviceTask>
+      <bpmn:exclusiveGateway id="Gateway_162uu6h">
+        <bpmn:incoming>Flow_0uvbyk6</bpmn:incoming>
+        <bpmn:incoming>Flow_1d5v0qy</bpmn:incoming>
+        <bpmn:outgoing>Flow_01klt5d</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_01klt5d" sourceRef="Gateway_162uu6h" targetRef="SubmitContractTask" />
+      <bpmn:sequenceFlow id="Flow_1d5v0qy" sourceRef="GenerateRecurrenceContractTask" targetRef="Gateway_162uu6h" />
+      <bpmn:receiveTask id="FillInContactFormTask" name="Fill in contact form" messageRef="Message_1ayewze">
+        <bpmn:extensionElements>
+          <camunda:executionListener delegateExpression="${fillInContactFormEndListener}" event="end" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_13qp3ol</bpmn:incoming>
+        <bpmn:outgoing>Flow_1ipu4f0</bpmn:outgoing>
+        <bpmn:property id="Property_09i4jxc" name="__targetRef_placeholder" />
+        <bpmn:dataInputAssociation id="DataInputAssociation_020o9l8">
+          <bpmn:sourceRef>FillableProspectDataObjectReference</bpmn:sourceRef>
+          <bpmn:targetRef>Property_09i4jxc</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
+        <bpmn:dataOutputAssociation id="DataOutputAssociation_0uazbz1">
+          <bpmn:targetRef>NegotiableLeadDataObjectReference</bpmn:targetRef>
+        </bpmn:dataOutputAssociation>
+      </bpmn:receiveTask>
+    </bpmn:transaction>
+    <bpmn:sequenceFlow id="Flow_1ubwmj6" sourceRef="Activity_0e3wrd9" targetRef="SaleCompletedEndEvent" />
+    <bpmn:endEvent id="SaleCompletedEndEvent" name="Sale completed">
+      <bpmn:incoming>Flow_1ubwmj6</bpmn:incoming>
+      <bpmn:property id="Property_0emk6pd" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_1sigccf">
+        <bpmn:sourceRef>ProvisionableSignedContractDataObjectReference</bpmn:sourceRef>
+        <bpmn:targetRef>Property_0emk6pd</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1cx62qw" messageRef="Message_1sedv8u" />
+    </bpmn:endEvent>
+    <bpmn:dataObjectReference id="FillableProspectDataObjectReference" name="&#60;&#60;Fillable&#62;&#62;&#10;Prospect" dataObjectRef="DataObject_1juwfk1" />
+    <bpmn:dataObject id="DataObject_1juwfk1" />
+    <bpmn:dataObjectReference id="NegotiableLeadDataObjectReference" name="&#60;&#60;Negotiable&#62;&#62;&#10;Lead" dataObjectRef="DataObject_09kkrc6" />
+    <bpmn:dataObject id="DataObject_09kkrc6" />
+    <bpmn:intermediateThrowEvent id="UnknownReceivedEvent" name="Unknown received">
+      <bpmn:incoming>Flow_0ronlfn</bpmn:incoming>
+      <bpmn:outgoing>Flow_1q1k9q7</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0vs1ddl" messageRef="Message_1sedv8u" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_1q1k9q7" sourceRef="UnknownReceivedEvent" targetRef="Activity_0e3wrd9" />
+    <bpmn:dataObjectReference id="AttractableOfferDataObjectReference" name="&#60;&#60;Attractable&#62;&#62;&#10;Offer" dataObjectRef="DataObject_03fdb22" />
+    <bpmn:dataObject id="DataObject_03fdb22" />
+    <bpmn:dataObjectReference id="ContractableSaleDataObjectReference" name="&#60;&#60;Contractable&#62;&#62;&#10;Sale" dataObjectRef="DataObject_1gys0ka" />
+    <bpmn:dataObject id="DataObject_1gys0ka" />
+    <bpmn:dataObjectReference id="ProvisionableSignedContractDataObjectReference" name="&#60;&#60;Provisionable&#62;&#62;&#10;SignedContract" dataObjectRef="DataObject_02bcdh9" />
+    <bpmn:dataObject id="DataObject_02bcdh9" />
+    <bpmn:dataObjectReference id="SignableSingleContractDataObjectReference" name="&#60;&#60;Signable&#62;&#62;&#10;SingleContract" dataObjectRef="DataObject_11nsz5x" />
+    <bpmn:dataObject id="DataObject_11nsz5x" />
+    <bpmn:startEvent id="SalesStaredStartEvent" name="Sales stared">
+      <bpmn:outgoing>Flow_0ronlfn</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_04froht">
+        <bpmn:targetRef>AttractableOfferDataObjectReference</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:startEvent>
+    <bpmn:dataObjectReference id="SignableRecurrentContractDataObjectReference" name="&#60;&#60;Signable&#62;&#62;&#10;RecurringContract" dataObjectRef="DataObject_0hfa4rt" />
+    <bpmn:dataObject id="DataObject_0hfa4rt" />
+    <bpmn:sequenceFlow id="Flow_0ronlfn" sourceRef="SalesStaredStartEvent" targetRef="UnknownReceivedEvent" />
+    <bpmn:textAnnotation id="TextAnnotation_171gycj">
+      <bpmn:text>A mass trigger mechanism initiates several process instances.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1wmpie7" sourceRef="SalesStaredStartEvent" targetRef="TextAnnotation_171gycj" />
+    <bpmn:textAnnotation id="TextAnnotation_0v410vu">
+      <bpmn:text>public interface Fillable {
+  public Negotiable fillForm();
+}</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0ljzkog" sourceRef="FillableProspectDataObjectReference" targetRef="TextAnnotation_0v410vu" />
+    <bpmn:textAnnotation id="TextAnnotation_1ou8l1e">
+      <bpmn:text>public interface Atractable {
+  public Attractable send();
+  public Fillable getInterested();
+}</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_09xx2oq" sourceRef="AttractableOfferDataObjectReference" targetRef="TextAnnotation_1ou8l1e" />
+    <bpmn:textAnnotation id="TextAnnotation_1qwc8i5">
+      <bpmn:text>public interface Negotiable {
+  public Contractable negotiate();
+}</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1sr41ik" sourceRef="NegotiableLeadDataObjectReference" targetRef="TextAnnotation_1qwc8i5" />
+    <bpmn:textAnnotation id="TextAnnotation_0oct6nq">
+      <bpmn:text>public interface Contractable {
+  public Signable generateContract();
+  public Booblean isRecurrency();
+}</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1ofgx52" sourceRef="ContractableSaleDataObjectReference" targetRef="TextAnnotation_0oct6nq" />
+    <bpmn:textAnnotation id="TextAnnotation_1heru2n">
+      <bpmn:text>public interface Signable {
+  public Signable submitContract();
+  public Provisionable receiveSubscription();
+}</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1rr6qg2" sourceRef="SignableSingleContractDataObjectReference" targetRef="TextAnnotation_1heru2n" />
+  </bpmn:process>
+  <bpmn:message id="Message_1sedv8u" name="statusChanged" />
+  <bpmn:message id="Message_0g940ri" name="getInterested" />
+  <bpmn:message id="Message_1p3x0w0" name="receiveSubscription" />
+  <bpmn:message id="Message_1ayewze" name="fillInContactForm" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="DigitalMarketingProcess">
+      <bpmndi:BPMNEdge id="Flow_0ronlfn_di" bpmnElement="Flow_0ronlfn">
+        <di:waypoint x="218" y="330" />
+        <di:waypoint x="282" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1q1k9q7_di" bpmnElement="Flow_1q1k9q7">
+        <di:waypoint x="318" y="330" />
+        <di:waypoint x="370" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ubwmj6_di" bpmnElement="Flow_1ubwmj6">
+        <di:waypoint x="2140" y="330" />
+        <di:waypoint x="2192" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1w3qcrg_di" bpmnElement="Flow_1w3qcrg">
+        <di:waypoint x="2080" y="581" />
+        <di:waypoint x="2080" y="650" />
+        <di:waypoint x="2192" y="650" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1unglhh_di" bpmnElement="Flow_1unglhh">
+        <di:waypoint x="1980" y="581" />
+        <di:waypoint x="1980" y="650" />
+        <di:waypoint x="2192" y="650" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_0tw3zox_di" bpmnElement="SalesFunnelUpdateSubProcess" isExpanded="true">
+        <dc:Bounds x="370" y="590" width="395" height="150" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1o7pgq4_di" bpmnElement="Flow_1o7pgq4">
+        <di:waypoint x="605" y="670" />
+        <di:waypoint x="687" y="670" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zqxhpd_di" bpmnElement="Flow_0zqxhpd">
+        <di:waypoint x="446" y="670" />
+        <di:waypoint x="505" y="670" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0nzyrqu_di" bpmnElement="StatusChangedStartEvent">
+        <dc:Bounds x="410" y="652" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="390" y="695" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06747mn_di" bpmnElement="UpdateSalesFunnelTask">
+        <dc:Bounds x="505" y="630" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0fo8axb_di" bpmnElement="SalesFunnelUpdatedEndEvent">
+        <dc:Bounds x="687" y="652" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="675" y="695" width="61" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_111uaag_di" bpmnElement="SalesLostEndEvent">
+        <dc:Bounds x="2192" y="632" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2187" y="675" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1hqpdrt_di" bpmnElement="Activity_0e3wrd9" isExpanded="true">
+        <dc:Bounds x="370" y="270" width="1770" height="293" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1d5v0qy_di" bpmnElement="Flow_1d5v0qy">
+        <di:waypoint x="1670" y="473" />
+        <di:waypoint x="1730" y="473" />
+        <di:waypoint x="1730" y="355" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01klt5d_di" bpmnElement="Flow_01klt5d">
+        <di:waypoint x="1755" y="330" />
+        <di:waypoint x="1780" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15rvu3x_di" bpmnElement="RecurrencySequenceFlow">
+        <di:waypoint x="1480" y="355" />
+        <di:waypoint x="1480" y="473" />
+        <di:waypoint x="1570" y="473" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1495" y="456" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0uvbyk6_di" bpmnElement="Flow_0uvbyk6">
+        <di:waypoint x="1670" y="330" />
+        <di:waypoint x="1705" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ijtrf4_di" bpmnElement="SingleSequenceFlow">
+        <di:waypoint x="1505" y="330" />
+        <di:waypoint x="1570" y="330" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1522" y="312" width="31" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_17rdktd_di" bpmnElement="GiveUpSequenceFlow">
+        <di:waypoint x="1280" y="355" />
+        <di:waypoint x="1280" y="473" />
+        <di:waypoint x="1352" y="473" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1284" y="385" width="23" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0a0eebx_di" bpmnElement="Flow_0a0eebx">
+        <di:waypoint x="1305" y="330" />
+        <di:waypoint x="1352" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0sggiy5_di" bpmnElement="Flow_0sggiy5">
+        <di:waypoint x="2020" y="330" />
+        <di:waypoint x="2062" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00svbvf_di" bpmnElement="Flow_00svbvf">
+        <di:waypoint x="1950" y="388" />
+        <di:waypoint x="1950" y="433" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1fx4tkg_di" bpmnElement="Flow_1fx4tkg">
+        <di:waypoint x="1880" y="330" />
+        <di:waypoint x="1920" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1944r1l_di" bpmnElement="Flow_1944r1l">
+        <di:waypoint x="1388" y="330" />
+        <di:waypoint x="1455" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1l18w2c_di" bpmnElement="Flow_1l18w2c">
+        <di:waypoint x="1205" y="330" />
+        <di:waypoint x="1255" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10n3wc7_di" bpmnElement="Flow_10n3wc7">
+        <di:waypoint x="1130" y="388" />
+        <di:waypoint x="1130" y="433" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01ydda5_di" bpmnElement="Flow_01ydda5">
+        <di:waypoint x="505" y="388" />
+        <di:waypoint x="505" y="473" />
+        <di:waypoint x="532" y="473" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ei72t6_di" bpmnElement="Flow_1ei72t6">
+        <di:waypoint x="428" y="330" />
+        <di:waypoint x="475" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tt3kux_di" bpmnElement="Flow_1tt3kux">
+        <di:waypoint x="1053" y="330" />
+        <di:waypoint x="1105" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ipu4f0_di" bpmnElement="Flow_1ipu4f0">
+        <di:waypoint x="965" y="330" />
+        <di:waypoint x="1017" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18isr1f_di" bpmnElement="Flow_18isr1f">
+        <di:waypoint x="890" y="388" />
+        <di:waypoint x="890" y="433" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13qp3ol_di" bpmnElement="Flow_13qp3ol">
+        <di:waypoint x="813" y="330" />
+        <di:waypoint x="865" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1st0mr0_di" bpmnElement="Flow_1st0mr0">
+        <di:waypoint x="650" y="388" />
+        <di:waypoint x="650" y="433" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0t87ovz_di" bpmnElement="Flow_0t87ovz">
+        <di:waypoint x="725" y="330" />
+        <di:waypoint x="777" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qtokxa_di" bpmnElement="Flow_0qtokxa">
+        <di:waypoint x="575" y="330" />
+        <di:waypoint x="625" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_10unz3q_di" bpmnElement="SendOfferTask">
+        <dc:Bounds x="475" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qau2ik_di" bpmnElement="GetInterestedTask">
+        <dc:Bounds x="625" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0btk44e_di" bpmnElement="ResendOfferByEmailTask">
+        <dc:Bounds x="625" y="433" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1wiqj83_di" bpmnElement="ProspectAttractedEvent">
+        <dc:Bounds x="777" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="750" y="355" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qufd2f_di" bpmnElement="FollowupFillingContactFormTask">
+        <dc:Bounds x="865" y="433" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1bpf2x7_di" bpmnElement="LeadConvertedEvent">
+        <dc:Bounds x="1017" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="998" y="355" width="76" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_15rc5we_di" bpmnElement="NegotiateSaleTask">
+        <dc:Bounds x="1105" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0rjj1pz_di" bpmnElement="Event_0rjj1pz">
+        <dc:Bounds x="392" y="312" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11ahdwz_di" bpmnElement="CancelEndEvent">
+        <dc:Bounds x="532" y="455" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="533" y="503" width="35" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ozk9z4_di" bpmnElement="FollowupCloseSaleTask">
+        <dc:Bounds x="1105" y="433" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0pt6idr_di" bpmnElement="SaleConqueredEvent">
+        <dc:Bounds x="1352" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1331" y="355" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qrj1ea_di" bpmnElement="SubmitContractTask">
+        <dc:Bounds x="1780" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_133y6b5_di" bpmnElement="ReceiveSubscriptionTask">
+        <dc:Bounds x="1920" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00ozjpg_di" bpmnElement="FollowupContractSignatureTask">
+        <dc:Bounds x="1930" y="433" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0lopvfc_di" bpmnElement="Event_0lopvfc">
+        <dc:Bounds x="2062" y="312" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0omfg19_di" bpmnElement="Gateway_0omfg19" isMarkerVisible="true">
+        <dc:Bounds x="1255" y="305" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1qt8dt2_di" bpmnElement="CancelEndEvent1">
+        <dc:Bounds x="1352" y="455" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1353" y="498" width="35" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1kt3u0o_di" bpmnElement="Gateway_1kt3u0o" isMarkerVisible="true">
+        <dc:Bounds x="1455" y="305" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1g5bg9j_di" bpmnElement="GenerateSingleContractTask">
+        <dc:Bounds x="1570" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0czwnpz_di" bpmnElement="GenerateRecurrenceContractTask">
+        <dc:Bounds x="1570" y="433" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_162uu6h_di" bpmnElement="Gateway_162uu6h" isMarkerVisible="true">
+        <dc:Bounds x="1705" y="305" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1slxv38_di" bpmnElement="FillInContactFormTask">
+        <dc:Bounds x="865" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0agwbht_di" bpmnElement="EveryDayBoundaryEvent">
+        <dc:Bounds x="1932" y="352" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1955" y="388" width="29" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ke5zze_di" bpmnElement="EveryDayBoundaryEvent1">
+        <dc:Bounds x="1112" y="352" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1135" y="388" width="29" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0nkg7dg_di" bpmnElement="EveryDayBoundaryEvent2">
+        <dc:Bounds x="872" y="352" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="895" y="388" width="29" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_043aaxv_di" bpmnElement="EveryTwoDaysBoundaryEvent">
+        <dc:Bounds x="632" y="352" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="653" y="388" width="44" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0jniy2m_di" bpmnElement="SendFailBoundaryEvent">
+        <dc:Bounds x="487" y="352" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="508" y="392" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_049vpqk_di" bpmnElement="SaleCompletedEndEvent">
+        <dc:Bounds x="2192" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2172" y="355" width="76" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0b1bqco_di" bpmnElement="FillableProspectDataObjectReference">
+        <dc:Bounds x="782" y="170" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="771" y="227" width="61" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_1k0tf44_di" bpmnElement="NegotiableLeadDataObjectReference">
+        <dc:Bounds x="1012" y="170" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="992" y="227" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1cd3a5l_di" bpmnElement="UnknownReceivedEvent">
+        <dc:Bounds x="282" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="277" y="355" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_02ujztj_di" bpmnElement="AttractableOfferDataObjectReference">
+        <dc:Bounds x="282" y="170" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="262" y="227" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0k90u9d_di" bpmnElement="ContractableSaleDataObjectReference">
+        <dc:Bounds x="1352" y="170" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1326" y="227" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0s6ieqs_di" bpmnElement="ProvisionableSignedContractDataObjectReference">
+        <dc:Bounds x="2092" y="170" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2069" y="227" width="86" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_00ofcej_di" bpmnElement="SignableSingleContractDataObjectReference">
+        <dc:Bounds x="1712" y="170" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1695" y="227" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_144zq0h_di" bpmnElement="SalesStaredStartEvent">
+        <dc:Bounds x="182" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="172" y="355" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0h6yp9c_di" bpmnElement="SignableRecurrentContractDataObjectReference">
+        <dc:Bounds x="1712" y="590" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1686" y="647" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_171gycj_di" bpmnElement="TextAnnotation_171gycj">
+        <dc:Bounds x="210" y="392" width="160" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0v410vu_di" bpmnElement="TextAnnotation_0v410vu">
+        <dc:Bounds x="820" y="90" width="192" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1ou8l1e_di" bpmnElement="TextAnnotation_1ou8l1e">
+        <dc:Bounds x="320" y="83" width="220" height="68" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1qwc8i5_di" bpmnElement="TextAnnotation_1qwc8i5">
+        <dc:Bounds x="1050" y="90" width="220" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0oct6nq_di" bpmnElement="TextAnnotation_0oct6nq">
+        <dc:Bounds x="1390" y="77" width="220" height="68" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1heru2n_di" bpmnElement="TextAnnotation_1heru2n">
+        <dc:Bounds x="1750" y="83" width="248" height="68" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0twtnw1_di" bpmnElement="CampaignEndedBoundaryEvent">
+        <dc:Bounds x="2062" y="545" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2083" y="588" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0027dcm_di" bpmnElement="CanceledBoundaryEvent">
+        <dc:Bounds x="1962" y="545" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1986" y="588" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataInputAssociation_0veym9o_di" bpmnElement="DataInputAssociation_0veym9o">
+        <di:waypoint x="318" y="195" />
+        <di:waypoint x="525" y="195" />
+        <di:waypoint x="525" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0zbl2sx_di" bpmnElement="DataOutputAssociation_0zbl2sx">
+        <di:waypoint x="675" y="290" />
+        <di:waypoint x="675" y="195" />
+        <di:waypoint x="782" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_0259e7g_di" bpmnElement="DataInputAssociation_0259e7g">
+        <di:waypoint x="1048" y="195" />
+        <di:waypoint x="1120" y="195" />
+        <di:waypoint x="1120" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_14op3gx_di" bpmnElement="DataOutputAssociation_14op3gx">
+        <di:waypoint x="1190" y="290" />
+        <di:waypoint x="1190" y="195" />
+        <di:waypoint x="1352" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1kpggox_di" bpmnElement="DataInputAssociation_1kpggox">
+        <di:waypoint x="1748" y="195" />
+        <di:waypoint x="1830" y="195" />
+        <di:waypoint x="1830" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1ya1o3q_di" bpmnElement="DataInputAssociation_1ya1o3q">
+        <di:waypoint x="1748" y="615" />
+        <di:waypoint x="1830" y="615" />
+        <di:waypoint x="1830" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_00y2y20_di" bpmnElement="DataOutputAssociation_00y2y20">
+        <di:waypoint x="1970" y="290" />
+        <di:waypoint x="1970" y="195" />
+        <di:waypoint x="2092" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_19oijd4_di" bpmnElement="DataInputAssociation_19oijd4">
+        <di:waypoint x="1388" y="195" />
+        <di:waypoint x="1590" y="195" />
+        <di:waypoint x="1590" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0b8srzb_di" bpmnElement="DataOutputAssociation_0b8srzb">
+        <di:waypoint x="1650" y="290" />
+        <di:waypoint x="1650" y="195" />
+        <di:waypoint x="1712" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_14vzoet_di" bpmnElement="DataOutputAssociation_14vzoet">
+        <di:waypoint x="1620" y="513" />
+        <di:waypoint x="1620" y="615" />
+        <di:waypoint x="1712" y="615" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_020o9l8_di" bpmnElement="DataInputAssociation_020o9l8">
+        <di:waypoint x="818" y="195" />
+        <di:waypoint x="890" y="195" />
+        <di:waypoint x="890" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0uazbz1_di" bpmnElement="DataOutputAssociation_0uazbz1">
+        <di:waypoint x="950" y="290" />
+        <di:waypoint x="950" y="195" />
+        <di:waypoint x="1012" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1sigccf_di" bpmnElement="DataInputAssociation_1sigccf">
+        <di:waypoint x="2128" y="195" />
+        <di:waypoint x="2210" y="195" />
+        <di:waypoint x="2210" y="312" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_04froht_di" bpmnElement="DataOutputAssociation_04froht">
+        <di:waypoint x="200" y="312" />
+        <di:waypoint x="200" y="195" />
+        <di:waypoint x="282" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1wmpie7_di" bpmnElement="Association_1wmpie7">
+        <di:waypoint x="211" y="344" />
+        <di:waypoint x="248" y="392" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0ljzkog_di" bpmnElement="Association_0ljzkog">
+        <di:waypoint x="818" y="172" />
+        <di:waypoint x="840" y="144" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_09xx2oq_di" bpmnElement="Association_09xx2oq">
+        <di:waypoint x="318" y="170" />
+        <di:waypoint x="332" y="151" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1sr41ik_di" bpmnElement="Association_1sr41ik">
+        <di:waypoint x="1048" y="172" />
+        <di:waypoint x="1070" y="144" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1ofgx52_di" bpmnElement="Association_1ofgx52">
+        <di:waypoint x="1387" y="170" />
+        <di:waypoint x="1403" y="145" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1rr6qg2_di" bpmnElement="Association_1rr6qg2">
+        <di:waypoint x="1748" y="170" />
+        <di:waypoint x="1762" y="151" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

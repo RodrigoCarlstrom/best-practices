@@ -1,0 +1,108 @@
+<form class="form" role="form">
+
+	<script cam-script type="text/form-script">
+    	camForm.on('form-loaded', function() {
+			console.log('form-loaded');
+			camForm.variableManager.fetchVariable('token');
+      	});
+		camForm.on('variables-fetched', function() {
+			console.log('variables-fetched');
+			$scope.camForm.variableManager.variables.token.valueInfo.objectTypeName = 'br.com.evoluo.example.marketing.digital.model.Sale';
+			$scope.token = camForm.variableManager.variableValue('token');
+    	});
+		camForm.on('variables-restored', function() {
+			// console.log('variables-restored');
+    	});
+		camForm.on('variables-applied', function() {
+			// console.log('variables-applied');
+    	});
+  	</script>
+
+
+	<h2 class="col-md-12">Campaing</h2>
+	<dl class="dl-horizontal col-md-12">
+		<dt>Name</dt>
+		<dd>{{token.campaign.name}}</dd>
+		<dt>Content</dt>
+		<dd>{{token.campaign.content}}</dd>
+		<dt>Expiration</dt>
+		<dd>{{token.campaign.expiration}}</dd>
+	</dl>
+	<div class="col-md-6">
+		<h2>Contact</h2>
+		<dl class="dl-horizontal">
+			<dt>First name</dt>
+			<dd>{{token.contact.firstName}}</dd>
+			<dt>Last name</dt>
+			<dd>{{token.contact.lastName}}</dd>
+			<dt>Email</dt>
+			<dd>{{token.contact.email}}</dd>
+			<dt>Phone</dt>
+			<dd>{{token.contact.phoneNumber}}</dd>
+		</dl>
+	</div>
+	<div class="col-md-6">
+		<h2>Address</h2>
+		<dl class="dl-horizontal">
+			<dt>Street</dt>
+			<dd>{{token.contact.address.street}}</dd>
+			<dt>City</dt>
+			<dd>{{token.contact.address.city}}</dd>
+			<dt>State</dt>
+			<dd>{{token.contact.address.state}}</dd>
+			<dt>Zip code</dt>
+			<dd>{{token.contact.address.zipCode}}</dd>
+		</dl>
+	</div>
+	<h2 class="col-md-12">Sale form</h2>
+	<!-- Sales result -->
+	<div class="form-group">
+		<label for="result" class="control-label col-md-12">Result</label>
+		<div class="col-md-12" style="margin-bottom: 20px;">
+			<select name="result" ng-model="token.result" class="form-control"
+				required>
+				<option value="CLOSED">Closed sale</option>
+				<option value="LOSTED">Losted sale</option>
+			</select>
+		</div>
+	</div>
+	<!-- Contract value -->
+	<div class="form-group" ng-if="token.result == 'CLOSED'">
+		<label for="value" class="control-label col-md-12">Contract value</label>
+		<div class="col-md-12" style="margin-bottom: 20px;">
+			<input type="number" name="value" ng-model="token.value"
+				class="form-control" ng-required="token.result == 'CLOSED'" nin="10"/>
+		</div>
+	</div>
+	<!-- Contract type -->
+	<div class="form-group" ng-if="token.result == 'CLOSED'">
+		<label for="contractType" class="control-label col-md-12">Contract
+			type</label>
+		<div class="col-md-12" style="margin-bottom: 20px;">
+			<select name="contractType" ng-model="token.contractType"
+				class="form-control" ng-required="token.result == 'CLOSED'">
+				<option value="SINGLE">Single contract</option>
+				<option value="RECURRENT">Recurrency</option>
+			</select>
+		</div>
+	</div>
+	<!-- Number of installments -->
+	<div class="form-group" ng-if="token.contractType == 'RECURRENT'">
+		<label for="numberOfInstallments" class="control-label col-md-12">Number
+			of installments</label>
+		<div class="col-md-12" style="margin-bottom: 20px;">
+			<input type="number" name="numberOfInstallments"
+				ng-model="token.numberOfInstallments" class="form-control"
+				ng-required="token.contractType == 'RECURRENT'" min="2" />
+		</div>
+	</div>
+	<!-- Sale comments -->
+	<div class="form-group">
+		<label for="comments" class="control-label col-md-12">Comments</label>
+		<div class="col-md-12" style="margin-bottom: 20px;">
+			<textarea name="comments" ng-model="token.comments"
+				class="form-control" rows="5" required>
+			</textarea>
+		</div>
+	</div>
+</form>
