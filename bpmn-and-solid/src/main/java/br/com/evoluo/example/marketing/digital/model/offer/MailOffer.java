@@ -22,7 +22,7 @@ public class MailOffer extends Offer implements Attractable, Serializable {
 	// FIXME: Configurar o spring com AspectJ para poder injetar esta instância via
 	// @Autowired. Isto será necessário pos que inicia a classe MailOffer é o
 	// Camunda, através do comando execution.getVariable("token").
-	private MailService service = new MailService();
+	private MailService mailService = new MailService();
 
 	@Override
 	public void validateOffer() throws InvalidOfferException {
@@ -34,7 +34,7 @@ public class MailOffer extends Offer implements Attractable, Serializable {
 	@Override
 	public Attractable sendOffer() {
 		log.start("sendOffer");
-		Attractable ret = this.service.send(this);
+		Attractable ret = this.mailService.send(this);
 		log.ret("sendOffer", ret);
 		return ret;
 	}

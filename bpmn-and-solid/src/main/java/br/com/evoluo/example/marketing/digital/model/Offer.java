@@ -1,6 +1,7 @@
 package br.com.evoluo.example.marketing.digital.model;
 
 import java.io.Serializable;
+
 import br.com.evoluo.example.commons.SimpleLogger;
 import br.com.evoluo.example.commons.ValidateUtils;
 import br.com.evoluo.example.commons.services.SalesService;
@@ -17,7 +18,7 @@ public abstract class Offer implements Situable, Serializable {
 
 	private static final long serialVersionUID = -6037614396403161428L;
 
-	private SalesService service = new SalesService();
+	private SalesService salesService = new SalesService();
 
 	private String recipient;
 	private DigitalMarketingStatus status = DigitalMarketingStatus.UNKNOWED;
@@ -31,14 +32,14 @@ public abstract class Offer implements Situable, Serializable {
 			throw new InvalidOfferException("Offer status is empty!");
 		if (ValidateUtils.isNull(this.campaign))
 			throw new InvalidOfferException("Offer campaign is null!");
-		this.campaign.validadte();
+		this.campaign.validate();
 		log.end("validate");
 	}
 
 	@Override
 	public void updateFunnel() {
 		log.start("updateFunnel");
-		service.updateFunnel(this);
+		salesService.updateFunnel(this);
 		log.end("updateFunnel");
 	}
 

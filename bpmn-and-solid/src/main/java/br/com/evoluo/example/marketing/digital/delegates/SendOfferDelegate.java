@@ -20,5 +20,6 @@ public class SendOfferDelegate implements JavaDelegate {
 		execution.setVariable("token", token.sendOffer());
 		log.end("execute");
 	}
+	
 
 }
