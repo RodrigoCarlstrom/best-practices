@@ -2,3 +2,5 @@
 /.settings/
 /.classpath
 /camunda-db.lock.db
+/camunda-db.mv.db
+/camunda-db.trace.db

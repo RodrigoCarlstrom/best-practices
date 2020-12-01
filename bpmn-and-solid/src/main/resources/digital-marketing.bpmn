@@ -246,7 +246,8 @@
     <bpmn:dataObject id="DataObject_1juwfk1" />
     <bpmn:dataObjectReference id="NegotiableLeadDataObjectReference" name="&#60;&#60;Negotiable&#62;&#62;&#10;Lead" dataObjectRef="DataObject_09kkrc6" />
     <bpmn:dataObject id="DataObject_09kkrc6" />
-    <bpmn:intermediateThrowEvent id="UnknownReceivedEvent" name="Unknown received">
+    <bpmn:intermediateThrowEvent id="UnknownReceivedEvent" name="Unknown received" camunda:asyncBefore="true">
+      <bpmn:documentation>${execution.getProcessEngineServices().getRuntimeService().correlateMessage('statusChanged', execution.getBusinessKey())}</bpmn:documentation>
       <bpmn:incoming>Flow_0ronlfn</bpmn:incoming>
       <bpmn:outgoing>Flow_1q1k9q7</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_0vs1ddl" messageRef="Message_1sedv8u" />
