@@ -19,7 +19,7 @@
     <bpmn:endEvent id="SalesLostEndEvent" name="Sales lost">
       <bpmn:incoming>Flow_1unglhh</bpmn:incoming>
       <bpmn:incoming>Flow_1w3qcrg</bpmn:incoming>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_0hpkhe1" messageRef="Message_1sedv8u" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0hpkhe1" messageRef="Message_1sedv8u" camunda:delegateExpression="${updateStatusDelegate}" />
     </bpmn:endEvent>
     <bpmn:boundaryEvent id="CanceledBoundaryEvent" name="Canceled" attachedToRef="Activity_0e3wrd9">
       <bpmn:outgoing>Flow_1unglhh</bpmn:outgoing>
@@ -61,7 +61,7 @@
       <bpmn:intermediateThrowEvent id="ProspectAttractedEvent" name="Prospect attracted">
         <bpmn:incoming>Flow_0t87ovz</bpmn:incoming>
         <bpmn:outgoing>Flow_13qp3ol</bpmn:outgoing>
-        <bpmn:messageEventDefinition id="MessageEventDefinition_0ivr4pc" messageRef="Message_1sedv8u" />
+        <bpmn:messageEventDefinition id="MessageEventDefinition_0ivr4pc" messageRef="Message_1sedv8u" camunda:delegateExpression="${updateStatusDelegate}" />
       </bpmn:intermediateThrowEvent>
       <bpmn:serviceTask id="FollowupFillingContactFormTask" name="Follow-up filling contact form" camunda:asyncBefore="true" camunda:delegateExpression="${followUpDelegate}">
         <bpmn:incoming>Flow_18isr1f</bpmn:incoming>
@@ -69,7 +69,7 @@
       <bpmn:intermediateThrowEvent id="LeadConvertedEvent" name="Lead converted">
         <bpmn:incoming>Flow_1ipu4f0</bpmn:incoming>
         <bpmn:outgoing>Flow_1tt3kux</bpmn:outgoing>
-        <bpmn:messageEventDefinition id="MessageEventDefinition_1ybdioa" messageRef="Message_1sedv8u" />
+        <bpmn:messageEventDefinition id="MessageEventDefinition_1ybdioa" messageRef="Message_1sedv8u" camunda:delegateExpression="${updateStatusDelegate}" />
       </bpmn:intermediateThrowEvent>
       <bpmn:userTask id="NegotiateSaleTask" name="Negotiate sale" camunda:formKey="embedded:app:forms/negotiate-sale.html">
         <bpmn:incoming>Flow_1tt3kux</bpmn:incoming>
@@ -129,7 +129,7 @@
       <bpmn:intermediateThrowEvent id="SaleConqueredEvent" name="Sale conquered">
         <bpmn:incoming>Flow_0a0eebx</bpmn:incoming>
         <bpmn:outgoing>Flow_1944r1l</bpmn:outgoing>
-        <bpmn:messageEventDefinition id="MessageEventDefinition_0p4le60" messageRef="Message_1sedv8u" />
+        <bpmn:messageEventDefinition id="MessageEventDefinition_0p4le60" messageRef="Message_1sedv8u" camunda:delegateExpression="${updateStatusDelegate}" />
       </bpmn:intermediateThrowEvent>
       <bpmn:sequenceFlow id="Flow_1944r1l" sourceRef="SaleConqueredEvent" targetRef="Gateway_1kt3u0o" />
       <bpmn:serviceTask id="SubmitContractTask" name="Submit contract" camunda:asyncBefore="true" camunda:delegateExpression="${submitContractDelegate}">
@@ -200,7 +200,7 @@
         </bpmn:dataOutputAssociation>
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="RecurrencySequenceFlow" name="Recurrent" sourceRef="Gateway_1kt3u0o" targetRef="GenerateRecurrenceContractTask">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${token.isRecurrent()}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${token.recurrent()}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:serviceTask id="GenerateRecurrenceContractTask" name="Generate Recurrence Contract" camunda:asyncBefore="true" camunda:delegateExpression="${generateRecurrenceContractDelegate}">
         <bpmn:incoming>RecurrencySequenceFlow</bpmn:incoming>
@@ -240,16 +240,16 @@
         <bpmn:sourceRef>ProvisionableSignedContractDataObjectReference</bpmn:sourceRef>
         <bpmn:targetRef>Property_0emk6pd</bpmn:targetRef>
       </bpmn:dataInputAssociation>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_1cx62qw" messageRef="Message_1sedv8u" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1cx62qw" messageRef="Message_1sedv8u" camunda:delegateExpression="${updateStatusDelegate}" />
     </bpmn:endEvent>
     <bpmn:dataObjectReference id="FillableProspectDataObjectReference" name="&#60;&#60;Fillable&#62;&#62;&#10;Prospect" dataObjectRef="DataObject_1juwfk1" />
     <bpmn:dataObject id="DataObject_1juwfk1" />
     <bpmn:dataObjectReference id="NegotiableLeadDataObjectReference" name="&#60;&#60;Negotiable&#62;&#62;&#10;Lead" dataObjectRef="DataObject_09kkrc6" />
     <bpmn:dataObject id="DataObject_09kkrc6" />
-    <bpmn:intermediateThrowEvent id="UnknownReceivedEvent" name="Unknown received">
+    <bpmn:intermediateThrowEvent id="UnknownReceivedEvent" name="Unknown received" camunda:asyncBefore="true">
       <bpmn:incoming>Flow_0ronlfn</bpmn:incoming>
       <bpmn:outgoing>Flow_1q1k9q7</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_0vs1ddl" messageRef="Message_1sedv8u" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0vs1ddl" messageRef="Message_1sedv8u" camunda:delegateExpression="${updateStatusDelegate}" />
     </bpmn:intermediateThrowEvent>
     <bpmn:sequenceFlow id="Flow_1q1k9q7" sourceRef="UnknownReceivedEvent" targetRef="Activity_0e3wrd9" />
     <bpmn:dataObjectReference id="AttractableOfferDataObjectReference" name="&#60;&#60;Attractable&#62;&#62;&#10;Offer" dataObjectRef="DataObject_03fdb22" />

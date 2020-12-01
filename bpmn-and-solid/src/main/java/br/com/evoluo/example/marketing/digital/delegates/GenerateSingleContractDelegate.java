@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 import br.com.evoluo.example.commons.SimpleLogger;
+import br.com.evoluo.example.marketing.digital.Contractable;
 
 @Component
 public class GenerateSingleContractDelegate implements JavaDelegate {
@@ -14,7 +15,9 @@ public class GenerateSingleContractDelegate implements JavaDelegate {
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		log.start("execute");
-		// TODO Auto-generated method stub
+		Contractable sale = (Contractable) execution.getVariable("token");
+		sale.validateSale();
+		execution.setVariable("token", sale.generateContract());
 		log.end("execute");
 	}
 

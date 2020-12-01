@@ -20,7 +20,7 @@ public class Campaign implements Serializable {
 	private String followUpTimerCicle;
 	private Date expiration;
 
-	public void validadte() throws InvalidOfferException {
+	public void validate() throws InvalidOfferException {
 		log.start("validate");
 		if (ValidateUtils.isEmpty(this.name))
 			throw new InvalidOfferException("Campaign name is empty!");

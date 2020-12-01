@@ -11,6 +11,6 @@ public interface Contractable {
 	
 	public Boolean giveUp();
 
-	public Boolean isRecurrent();
+	public Boolean recurrent();
 
 }
