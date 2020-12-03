@@ -1,14 +1,10 @@
-package br.com.evoluo.example.marketing.digital;
-
-import br.com.evoluo.example.marketing.digital.exceptions.InvalidOfferException;
+package br.com.evoluo.example.marketing.digital;import br.com.evoluo.example.marketing.digital.model.offer.Campaign;
 
 public interface Attractable {
-	
-	public void validateOffer() throws InvalidOfferException;
 
-	public Attractable sendOffer();
+	public String getRecipient();
 
-	public Fillable toInterested();
+	public Campaign getCampaign();
 	
 
 }

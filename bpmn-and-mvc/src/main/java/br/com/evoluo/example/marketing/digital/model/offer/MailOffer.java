@@ -5,12 +5,12 @@ import java.io.Serializable;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import br.com.evoluo.example.commons.SimpleLogger;
-import br.com.evoluo.example.commons.services.MailService;
 import br.com.evoluo.example.marketing.digital.Attractable;
 import br.com.evoluo.example.marketing.digital.Fillable;
 import br.com.evoluo.example.marketing.digital.exceptions.InvalidOfferException;
 import br.com.evoluo.example.marketing.digital.model.Offer;
 import br.com.evoluo.example.marketing.digital.model.Prospect;
+import br.com.evoluo.example.marketing.digital.services.impl.MailService;
 
 @Configurable
 public class MailOffer extends Offer implements Attractable, Serializable {
