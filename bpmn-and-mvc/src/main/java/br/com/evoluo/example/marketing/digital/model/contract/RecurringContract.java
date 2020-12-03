@@ -8,12 +8,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import br.com.evoluo.example.commons.ValidateUtils;
-import br.com.evoluo.example.marketing.digital.Signable;
 import br.com.evoluo.example.marketing.digital.exceptions.InvalidContractException;
 import br.com.evoluo.example.marketing.digital.model.Contract;
 import br.com.evoluo.example.marketing.digital.model.Sale;
 
-public class RecurringContract extends Contract implements Signable, Serializable {
+public class RecurringContract extends Contract implements Serializable {
 
 	private static final long serialVersionUID = -3460396156303253602L;
 
@@ -32,13 +31,6 @@ public class RecurringContract extends Contract implements Signable, Serializabl
 					Date.from(LocalDate.now().plusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant()),
 					installmentValue);
 		}
-	}
-
-	@Override
-	public void validadeContract() throws InvalidContractException {
-		super.validadeContract();
-		if (ValidateUtils.isNull(this.installments) || this.installments.size() < 2)
-			throw new InvalidContractException("Recurring contract needs at least two installments!");
 	}
 
 }

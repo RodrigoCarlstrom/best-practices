@@ -147,6 +147,9 @@
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="Flow_1fx4tkg" sourceRef="SubmitContractTask" targetRef="ReceiveSubscriptionTask" />
       <bpmn:receiveTask id="ReceiveSubscriptionTask" name="Receive subscription" messageRef="Message_1p3x0w0">
+        <bpmn:extensionElements>
+          <camunda:executionListener delegateExpression="${receiveSubscriptionDelegate}" event="end" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_1fx4tkg</bpmn:incoming>
         <bpmn:outgoing>Flow_0sggiy5</bpmn:outgoing>
         <bpmn:dataOutputAssociation id="DataOutputAssociation_00y2y20">
@@ -279,13 +282,6 @@
 }</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Association_0ljzkog" sourceRef="FillableProspectDataObjectReference" targetRef="TextAnnotation_0v410vu" />
-    <bpmn:textAnnotation id="TextAnnotation_1ou8l1e">
-      <bpmn:text>public interface Atractable {
-  public Attractable send();
-  public Fillable getInterested();
-}</bpmn:text>
-    </bpmn:textAnnotation>
-    <bpmn:association id="Association_09xx2oq" sourceRef="AttractableOfferDataObjectReference" targetRef="TextAnnotation_1ou8l1e" />
     <bpmn:textAnnotation id="TextAnnotation_1qwc8i5">
       <bpmn:text>public interface Negotiable {
   public Contractable negotiate();
@@ -306,6 +302,13 @@
 }</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Association_1rr6qg2" sourceRef="SignableSingleContractDataObjectReference" targetRef="TextAnnotation_1heru2n" />
+    <bpmn:textAnnotation id="TextAnnotation_1ou8l1e">
+      <bpmn:text>public interface Atractable {
+  public Attractable send();
+  public Fillable getInterested();
+}</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_09xx2oq" sourceRef="AttractableOfferDataObjectReference" targetRef="TextAnnotation_1ou8l1e" />
   </bpmn:process>
   <bpmn:message id="Message_1sedv8u" name="statusChanged" />
   <bpmn:message id="Message_0g940ri" name="getInterested" />

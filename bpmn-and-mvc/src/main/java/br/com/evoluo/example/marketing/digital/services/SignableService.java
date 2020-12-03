@@ -1,12 +1,11 @@
 package br.com.evoluo.example.marketing.digital.services;
 
-import br.com.evoluo.example.marketing.digital.Provisionable;
-import br.com.evoluo.example.marketing.digital.Signable;
+import br.com.evoluo.example.marketing.digital.model.Contract;
 
 public interface SignableService {
 
-	public void submitContract(Signable token);
+	public void submitContract(Contract contract);
 
-	public Provisionable receiveSubscription(Signable token);
+	public Contract receiveSubscription(Contract contract);
 
 }

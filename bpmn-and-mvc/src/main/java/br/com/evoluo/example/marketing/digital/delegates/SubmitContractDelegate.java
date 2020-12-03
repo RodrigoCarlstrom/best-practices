@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.evoluo.example.commons.SimpleLogger;
-import br.com.evoluo.example.marketing.digital.Signable;
+import br.com.evoluo.example.marketing.digital.model.Contract;
 import br.com.evoluo.example.marketing.digital.services.SignableService;
 
 @Component
@@ -20,8 +20,8 @@ public class SubmitContractDelegate implements JavaDelegate {
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		log.start("execute");
-		Signable token = (Signable) execution.getVariable("token");
-		service.submitContract(token);
+		Contract contract = (Contract) execution.getVariable("token");
+		service.submitContract(contract);
 		log.end("execute");
 	}
 

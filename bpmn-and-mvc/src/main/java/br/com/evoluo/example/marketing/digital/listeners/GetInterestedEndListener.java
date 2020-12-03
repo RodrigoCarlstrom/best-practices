@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.evoluo.example.commons.SimpleLogger;
-import br.com.evoluo.example.marketing.digital.Attractable;
+import br.com.evoluo.example.marketing.digital.model.Offer;
 import br.com.evoluo.example.marketing.digital.services.AttractableService;
 
 @Component
@@ -20,8 +20,8 @@ public class GetInterestedEndListener implements ExecutionListener {
 	@Override
 	public void notify(DelegateExecution execution) throws Exception {
 		log.start("notify");
-		Attractable token = (Attractable) execution.getVariable("token");
-		execution.setVariable("token", service.toInterested(token));
+		Offer offer = (Offer) execution.getVariable("token");
+		execution.setVariable("token", service.toInterested(offer));
 		log.end("notify");
 	}
 

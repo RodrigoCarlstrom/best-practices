@@ -5,7 +5,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.evoluo.example.commons.SimpleLogger;
-import br.com.evoluo.example.marketing.digital.Signable;
+import br.com.evoluo.example.marketing.digital.model.Contract;
 import br.com.evoluo.example.marketing.digital.services.SignableService;
 
 public class ReceiveSubscriptionDelegate implements JavaDelegate {
@@ -18,8 +18,8 @@ public class ReceiveSubscriptionDelegate implements JavaDelegate {
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		log.start("execute");
-		Signable token = (Signable) execution.getVariable("toke");
-		execution.setVariable("token", service.receiveSubscription(token));
+		Contract contract = (Contract) execution.getVariable("toke");
+		execution.setVariable("token", service.receiveSubscription(contract));
 		log.end("execution");
 	}
 

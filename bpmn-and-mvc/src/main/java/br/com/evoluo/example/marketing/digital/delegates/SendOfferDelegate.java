@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.evoluo.example.commons.SimpleLogger;
-import br.com.evoluo.example.marketing.digital.Attractable;
+import br.com.evoluo.example.marketing.digital.model.Offer;
 import br.com.evoluo.example.marketing.digital.services.AttractableService;
 
 @Component
@@ -20,9 +20,8 @@ public class SendOfferDelegate implements JavaDelegate {
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		log.start("execute");
-		Attractable token = (Attractable) execution.getVariable("token");
-		token = service.send(token);
-		execution.setVariable("token", token);
+		Offer offer = (Offer) execution.getVariable("token");
+		service.send(offer);
 		log.end("execute");
 	}
 	

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.evoluo.example.commons.SimpleLogger;
-import br.com.evoluo.example.marketing.digital.Contractable;
+import br.com.evoluo.example.marketing.digital.model.Sale;
 import br.com.evoluo.example.marketing.digital.services.ContractableService;
 
 @Component
@@ -20,9 +20,9 @@ public class GenerateRecurrenceContractDelegate implements JavaDelegate {
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		log.start("execute");
-		Contractable token = (Contractable) execution.getVariable("token");
+		Sale sale = (Sale) execution.getVariable("token");
 		// sale.validateSale();
-		execution.setVariable("token", service.generateRecurrenceContract(token));
+		execution.setVariable("token", service.generateRecurrenceContract(sale));
 		log.end("execute");
 	}
 
