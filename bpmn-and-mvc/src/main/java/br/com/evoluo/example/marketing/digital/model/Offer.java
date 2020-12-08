@@ -7,7 +7,7 @@ import br.com.evoluo.example.marketing.digital.model.offer.DigitalMarketingStatu
 import lombok.Data;
 
 @Data
-public abstract class Offer implements Serializable {
+public class Offer implements Serializable {
 
 	private static final long serialVersionUID = -6037614396403161428L;
 

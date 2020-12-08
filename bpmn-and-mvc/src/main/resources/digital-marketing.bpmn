@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0mtijqx" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.3" camunda:diagramRelationId="4f1f1877-fdf2-4cfa-9f02-312b6ba6643f">
   <bpmn:process id="DigitalMarketingProcess" name="Digital Marketing" isExecutable="true">
-    <bpmn:subProcess id="SalesFunnelUpdateSubProcess" name="Sales funnel update" triggeredByEvent="true">
-      <bpmn:startEvent id="StatusChangedStartEvent" name="Status changed" isInterrupting="false">
+    <bpmn:subProcess id="SalesFunnelUpdateSubProcess" name="Sales funnel update" camunda:asyncBefore="true" triggeredByEvent="true">
+      <bpmn:startEvent id="StatusChangedStartEvent" name="Status changed" camunda:asyncBefore="true" isInterrupting="false">
         <bpmn:outgoing>Flow_0zqxhpd</bpmn:outgoing>
         <bpmn:messageEventDefinition id="MessageEventDefinition_06iapyl" messageRef="Message_1sedv8u" />
       </bpmn:startEvent>
@@ -33,7 +33,7 @@
         <bpmn:timeDate xsi:type="bpmn:tFormalExpression">${token.campaign.expiration}</bpmn:timeDate>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-    <bpmn:transaction id="Activity_0e3wrd9">
+    <bpmn:transaction id="Activity_0e3wrd9" camunda:asyncBefore="true">
       <bpmn:incoming>Flow_1q1k9q7</bpmn:incoming>
       <bpmn:outgoing>Flow_1ubwmj6</bpmn:outgoing>
       <bpmn:serviceTask id="SendOfferTask" name="Send offer" camunda:asyncBefore="true" camunda:delegateExpression="${sendOfferDelegate}">
@@ -83,7 +83,7 @@
           <bpmn:targetRef>ContractableSaleDataObjectReference</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
       </bpmn:userTask>
-      <bpmn:startEvent id="Event_0rjj1pz">
+      <bpmn:startEvent id="Event_0rjj1pz" camunda:asyncBefore="true">
         <bpmn:outgoing>Flow_1ei72t6</bpmn:outgoing>
       </bpmn:startEvent>
       <bpmn:boundaryEvent id="SendFailBoundaryEvent" name="Send fail" attachedToRef="SendOfferTask">
