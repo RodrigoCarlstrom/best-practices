@@ -2,9 +2,14 @@ package br.com.evoluo.example.marketing.digital.services.impl;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.evoluo.example.commons.SimpleLogger;
+import br.com.evoluo.example.commons.ValidateUtils;
+import br.com.evoluo.example.commons.exception.ValidateException;
+import br.com.evoluo.example.marketing.digital.exceptions.InvalidContractException;
+import br.com.evoluo.example.marketing.digital.exceptions.InvalidSaleException;
 import br.com.evoluo.example.marketing.digital.model.Contract;
 import br.com.evoluo.example.marketing.digital.model.Sale;
 import br.com.evoluo.example.marketing.digital.model.contract.RecurringContract;
@@ -17,6 +22,9 @@ import br.com.evoluo.example.marketing.digital.services.SignableService;
 public class ContractService implements ContractableService,  SignableService {
 
 	SimpleLogger log = SimpleLogger.getLogger(ContractService.class.getName());
+	
+	@Autowired
+	private ValidateUtils validator;
 
 	@Override
 	public SingleContract generateSingleContract(Sale sale) {
@@ -50,6 +58,28 @@ public class ContractService implements ContractableService,  SignableService {
 		contract.setSignature(siganure);
 		log.ret("receiveSubscription", contract);
 		return contract;
+	}
+
+	@Override
+	public void validate(Contract contract) throws InvalidContractException {
+		log.start("validate", contract);
+		try {
+			validator.validate(contract);
+		} catch (ValidateException e) {
+			throw new InvalidContractException(e);
+		}
+		log.end("validate");
+	}
+
+	@Override
+	public void validate(Sale sale) throws InvalidSaleException {
+		log.start("validate", sale);
+		try {
+			validator.validate(sale);
+		} catch (ValidateException e) {
+			throw new InvalidSaleException(e);
+		}
+		log.end("validate");
 	}
 
 }

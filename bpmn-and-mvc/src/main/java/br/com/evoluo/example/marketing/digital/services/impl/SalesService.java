@@ -1,8 +1,12 @@
 package br.com.evoluo.example.marketing.digital.services.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.evoluo.example.commons.SimpleLogger;
+import br.com.evoluo.example.commons.ValidateUtils;
+import br.com.evoluo.example.commons.exception.ValidateException;
+import br.com.evoluo.example.marketing.digital.exceptions.InvalidProspectException;
 import br.com.evoluo.example.marketing.digital.model.Contract;
 import br.com.evoluo.example.marketing.digital.model.Lead;
 import br.com.evoluo.example.marketing.digital.model.Offer;
@@ -14,6 +18,9 @@ import br.com.evoluo.example.marketing.digital.services.SituableService;
 public class SalesService implements SituableService, FillableService {
 
 	private static final SimpleLogger log = SimpleLogger.getLogger(SalesService.class.getName());
+	
+	@Autowired
+	private ValidateUtils validator;
 
 	public void submitContract(Contract contract) {
 		log.start("submitContract", contract);
@@ -33,5 +40,16 @@ public class SalesService implements SituableService, FillableService {
 		Lead lead = new Lead(prospect);
 		log.ret("fillForm", lead);
 		return lead;
+	}
+
+	@Override
+	public void validate(Prospect prospect) throws InvalidProspectException {
+		log.start("validate", prospect);
+		try {
+			validator.validate(prospect);
+		} catch (ValidateException e) {
+			throw new InvalidProspectException(e);
+		}
+		log.end("validate");
 	}
 }

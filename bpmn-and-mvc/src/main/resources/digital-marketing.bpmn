@@ -86,9 +86,9 @@
       <bpmn:startEvent id="Event_0rjj1pz" camunda:asyncBefore="true">
         <bpmn:outgoing>Flow_1ei72t6</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:boundaryEvent id="SendFailBoundaryEvent" name="Send fail" attachedToRef="SendOfferTask">
+      <bpmn:boundaryEvent id="SendFailBoundaryEvent" name="Invalid offer" attachedToRef="SendOfferTask">
         <bpmn:outgoing>Flow_01ydda5</bpmn:outgoing>
-        <bpmn:errorEventDefinition id="ErrorEventDefinition_1c1cfi5" />
+        <bpmn:errorEventDefinition id="ErrorEventDefinition_1c1cfi5" errorRef="Error_1j6gpz2" camunda:errorCodeVariable="errorCode" camunda:errorMessageVariable="errorMessage" />
       </bpmn:boundaryEvent>
       <bpmn:boundaryEvent id="EveryTwoDaysBoundaryEvent" name="Every&#10;two days" cancelActivity="false" attachedToRef="GetInterestedTask">
         <bpmn:outgoing>Flow_1st0mr0</bpmn:outgoing>
@@ -311,6 +311,7 @@
   <bpmn:message id="Message_0g940ri" name="getInterested" />
   <bpmn:message id="Message_1p3x0w0" name="receiveSubscription" />
   <bpmn:message id="Message_1ayewze" name="fillInContactForm" />
+  <bpmn:error id="Error_1j6gpz2" name="InvalidOffer" errorCode="InvalidOffer" camunda:errorMessage="Invalid offer" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="DigitalMarketingProcess">
       <bpmndi:BPMNEdge id="Flow_0ronlfn_di" bpmnElement="Flow_0ronlfn">
@@ -579,7 +580,7 @@
       <bpmndi:BPMNShape id="Event_0jniy2m_di" bpmnElement="SendFailBoundaryEvent">
         <dc:Bounds x="487" y="352" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="508" y="392" width="43" height="14" />
+          <dc:Bounds x="511" y="392" width="57" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_049vpqk_di" bpmnElement="SaleCompletedEndEvent">

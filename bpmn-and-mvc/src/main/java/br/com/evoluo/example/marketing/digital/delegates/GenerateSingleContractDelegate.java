@@ -21,7 +21,7 @@ public class GenerateSingleContractDelegate implements JavaDelegate {
 	public void execute(DelegateExecution execution) throws Exception {
 		log.start("execute");
 		Sale sale = (Sale) execution.getVariable("token");
-		// sale.validateSale();
+		service.validate(sale);
 		execution.setVariable("token", service.generateSingleContract(sale));
 		log.end("execute");
 	}

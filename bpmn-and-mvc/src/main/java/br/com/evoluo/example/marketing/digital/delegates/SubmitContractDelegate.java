@@ -21,6 +21,7 @@ public class SubmitContractDelegate implements JavaDelegate {
 	public void execute(DelegateExecution execution) throws Exception {
 		log.start("execute");
 		Contract contract = (Contract) execution.getVariable("token");
+		service.validate(contract);
 		service.submitContract(contract);
 		log.end("execute");
 	}

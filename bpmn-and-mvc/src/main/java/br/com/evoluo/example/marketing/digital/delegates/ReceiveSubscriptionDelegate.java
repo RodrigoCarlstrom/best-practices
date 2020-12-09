@@ -19,6 +19,7 @@ public class ReceiveSubscriptionDelegate implements JavaDelegate {
 	public void execute(DelegateExecution execution) throws Exception {
 		log.start("execute");
 		Contract contract = (Contract) execution.getVariable("toke");
+		service.validate(contract);
 		execution.setVariable("token", service.receiveSubscription(contract));
 		log.end("execution");
 	}

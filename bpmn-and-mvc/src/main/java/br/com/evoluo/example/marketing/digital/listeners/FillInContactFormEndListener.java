@@ -21,6 +21,7 @@ public class FillInContactFormEndListener implements ExecutionListener {
 	public void notify(DelegateExecution execution) throws Exception {
 		log.start("notify");
 		Prospect prospect = (Prospect) execution.getVariable("token");
+		service.validate(prospect);
 		execution.setVariable("token", service.fillForm(prospect));
 		log.end("notify");
 	}

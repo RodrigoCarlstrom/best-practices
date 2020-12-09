@@ -21,6 +21,7 @@ public class GetInterestedEndListener implements ExecutionListener {
 	public void notify(DelegateExecution execution) throws Exception {
 		log.start("notify");
 		Offer offer = (Offer) execution.getVariable("token");
+		service.validate(offer);
 		execution.setVariable("token", service.toInterested(offer));
 		log.end("notify");
 	}
