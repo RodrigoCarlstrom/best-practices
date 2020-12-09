@@ -1,0 +1,6 @@
+#FileLock
+#Wed Dec 09 10:57:11 BRT 2020
+hostName=192.168.15.52
+id=17647ca6b23c4770283b60096d598925d259cc03c40
+method=file
+server=192.168.15.52\:61102

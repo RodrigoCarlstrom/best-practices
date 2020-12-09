@@ -1,0 +1,5 @@
+/.settings/
+/target/
+/.classpath
+/camunda-db.lock.db
+/camunda-db.mv.db
