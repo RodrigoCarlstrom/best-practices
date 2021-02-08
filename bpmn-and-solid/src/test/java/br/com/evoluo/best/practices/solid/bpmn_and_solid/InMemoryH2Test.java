@@ -17,8 +17,8 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import br.com.evoluo.example.commons.LoggerDelegate;
-import br.com.evoluo.example.marketing.ProcessConstants;
+import br.com.evoluo.bpmn.and.solid.process.LoggerDelegate;
+import br.com.evoluo.bpmn.and.solid.process.marketing.ProcessConstants;
 
 import static org.camunda.bpm.engine.test.assertions.ProcessEngineTests.*;
 import static org.junit.Assert.*;

@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import br.com.evoluo.example.marketing.ProcessConstants;
+import br.com.evoluo.bpmn.and.solid.process.marketing.ProcessConstants;
 
 
 /**

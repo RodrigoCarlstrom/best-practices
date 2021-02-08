@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>br.com.evoluo.example.maketing</groupId>
+	<groupId>br.com.evoluo.bpmn.and.mvc</groupId>
 	<artifactId>marketing</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
@@ -186,7 +186,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.6.0</version>
 				<configuration>
-					<mainClass>br.com.evoluo.example.maketing.marketing.CamundaApplication</mainClass>
+					<mainClass>br.com.evoluo.bpmn.and.mvc.CamundaApplication</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

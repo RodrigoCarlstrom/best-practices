@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_07xm6oc" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.3">
+  <bpmn:process id="ErrorHandlerProcess" name="Error Handler" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="identity.processDefinitionId" label="Process Definition Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="identity.activityId" label="Activity Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="identity.incidentMessage" label="Incident Message" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_0bau0pa</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0bau0pa" sourceRef="StartEvent_1" targetRef="ConsultForErrorTask" />
+    <bpmn:serviceTask id="ConsultForErrorTask" name="Consult for error" camunda:asyncBefore="true" camunda:delegateExpression="${consultForErrorTask}">
+      <bpmn:incoming>Flow_0bau0pa</bpmn:incoming>
+      <bpmn:outgoing>Flow_0p8ty8c</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1kjfhkv" default="Flow_0xgqamp">
+      <bpmn:incoming>Flow_0p8ty8c</bpmn:incoming>
+      <bpmn:outgoing>Flow_0xgqamp</bpmn:outgoing>
+      <bpmn:outgoing>HasExistsSequenceFlow</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0p8ty8c" sourceRef="ConsultForErrorTask" targetRef="Gateway_1kjfhkv" />
+    <bpmn:sequenceFlow id="Flow_0xgqamp" sourceRef="Gateway_1kjfhkv" targetRef="ReportTheErrorTask" />
+    <bpmn:endEvent id="IgnoredErrorEndEvent" name="Ignored error">
+      <bpmn:incoming>HasExistsSequenceFlow</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="HasExistsSequenceFlow" name="Has&#10;exists" sourceRef="Gateway_1kjfhkv" targetRef="IgnoredErrorEndEvent">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${hasExists}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="ReportTheErrorTask" name="Report the error" camunda:candidateGroups="am">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="identity.processDefinitionId" label="Process Definition Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="identity.activityId" label="Activity Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="identity.incidentMessage" label="Incident Message" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="resolutionGroup" label="Grupo de resolução" type="enum">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+            <camunda:value id="brm" name="BRM" />
+            <camunda:value id="saleForce" name="Sales Force" />
+            <camunda:value id="inapp" name="InApp" />
+            <camunda:value id="integration" name="Integration" />
+          </camunda:formField>
+          <camunda:formField id="reportId" label="Report Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0xgqamp</bpmn:incoming>
+      <bpmn:outgoing>Flow_0awj09x</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0awj09x" sourceRef="ReportTheErrorTask" targetRef="ResolvedErrorTask" />
+    <bpmn:userTask id="ResolvedErrorTask" name="Resolved error" camunda:candidateGroups="${resolutionGroup}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="identity.processDefinitionId" label="Process Definition Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="identity.activityId" label="Activity Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="identity.incidentMessage" label="Incident Message" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="processChanged" label="Process Changed" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0awj09x</bpmn:incoming>
+      <bpmn:incoming>IneffectiveCorrectionSequenceFlow</bpmn:incoming>
+      <bpmn:outgoing>Flow_15vmsz4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_06eoe9f" default="Flow_0qt16c3">
+      <bpmn:incoming>Flow_15vmsz4</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qt16c3</bpmn:outgoing>
+      <bpmn:outgoing>ProcessChangedSequenceFlow</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_15vmsz4" sourceRef="ResolvedErrorTask" targetRef="Gateway_06eoe9f" />
+    <bpmn:sequenceFlow id="Flow_0qt16c3" sourceRef="Gateway_06eoe9f" targetRef="RetryIncidentsTask" />
+    <bpmn:sequenceFlow id="ProcessChangedSequenceFlow" name="Process&#10;changed" sourceRef="Gateway_06eoe9f" targetRef="MigrateProcessTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${processChanged}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="MigrateProcessTask" name="Migrate process" camunda:candidateGroups="am">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="identity.processDefinitionId" label="Process Definition Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="identity.activityId" label="Activity Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="identity.incidentMessage" label="Incident Message" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>ProcessChangedSequenceFlow</bpmn:incoming>
+      <bpmn:outgoing>Flow_1pqvpfi</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1pqvpfi" sourceRef="MigrateProcessTask" targetRef="RetryIncidentsTask" />
+    <bpmn:userTask id="AvaliateResultTask" name="Avaliate result" camunda:candidateGroups="am">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="identity.processDefinitionId" label="Process Definition Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="identity.activityId" label="Activity Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="identity.incidentMessage" label="Incident Message" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="effective" label="Efetividade Corretion" type="boolean" defaultValue="true" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_19cqhrz</bpmn:incoming>
+      <bpmn:outgoing>Flow_13jcj7w</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_0uw9p2p" default="Flow_046y0av">
+      <bpmn:incoming>Flow_13jcj7w</bpmn:incoming>
+      <bpmn:outgoing>Flow_046y0av</bpmn:outgoing>
+      <bpmn:outgoing>IneffectiveCorrectionSequenceFlow</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_13jcj7w" sourceRef="AvaliateResultTask" targetRef="Gateway_0uw9p2p" />
+    <bpmn:endEvent id="Event_1blh7bz">
+      <bpmn:incoming>Flow_046y0av</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_046y0av" sourceRef="Gateway_0uw9p2p" targetRef="Event_1blh7bz" />
+    <bpmn:sequenceFlow id="IneffectiveCorrectionSequenceFlow" name="Ineffective correction" sourceRef="Gateway_0uw9p2p" targetRef="ResolvedErrorTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!effective}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_19cqhrz" sourceRef="RetryIncidentsTask" targetRef="AvaliateResultTask" />
+    <bpmn:serviceTask id="RetryIncidentsTask" name="Retry incidents" camunda:asyncBefore="true" camunda:delegateExpression="${retryIncidentsTask}">
+      <bpmn:incoming>Flow_1pqvpfi</bpmn:incoming>
+      <bpmn:incoming>Flow_0qt16c3</bpmn:incoming>
+      <bpmn:outgoing>Flow_19cqhrz</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ErrorHandlerProcess">
+      <bpmndi:BPMNEdge id="Flow_19cqhrz_di" bpmnElement="Flow_19cqhrz">
+        <di:waypoint x="1080" y="177" />
+        <di:waypoint x="1120" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ihxnhh_di" bpmnElement="IneffectiveCorrectionSequenceFlow">
+        <di:waypoint x="1310" y="152" />
+        <di:waypoint x="1310" y="90" />
+        <di:waypoint x="740" y="90" />
+        <di:waypoint x="740" y="137" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="925" y="58" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_046y0av_di" bpmnElement="Flow_046y0av">
+        <di:waypoint x="1335" y="177" />
+        <di:waypoint x="1402" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13jcj7w_di" bpmnElement="Flow_13jcj7w">
+        <di:waypoint x="1220" y="177" />
+        <di:waypoint x="1285" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1pqvpfi_di" bpmnElement="Flow_1pqvpfi">
+        <di:waypoint x="930" y="290" />
+        <di:waypoint x="1030" y="290" />
+        <di:waypoint x="1030" y="217" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0i5w1kz_di" bpmnElement="ProcessChangedSequenceFlow">
+        <di:waypoint x="880" y="202" />
+        <di:waypoint x="880" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="888" y="206" width="43" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qt16c3_di" bpmnElement="Flow_0qt16c3">
+        <di:waypoint x="905" y="177" />
+        <di:waypoint x="980" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15vmsz4_di" bpmnElement="Flow_15vmsz4">
+        <di:waypoint x="790" y="177" />
+        <di:waypoint x="855" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0awj09x_di" bpmnElement="Flow_0awj09x">
+        <di:waypoint x="630" y="177" />
+        <di:waypoint x="690" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0a4tmwg_di" bpmnElement="HasExistsSequenceFlow">
+        <di:waypoint x="450" y="202" />
+        <di:waypoint x="450" y="290" />
+        <di:waypoint x="562" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="456" y="257" width="29" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xgqamp_di" bpmnElement="Flow_0xgqamp">
+        <di:waypoint x="475" y="177" />
+        <di:waypoint x="530" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0p8ty8c_di" bpmnElement="Flow_0p8ty8c">
+        <di:waypoint x="370" y="177" />
+        <di:waypoint x="425" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bau0pa_di" bpmnElement="Flow_0bau0pa">
+        <di:waypoint x="215" y="177" />
+        <di:waypoint x="270" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0e83dnp_di" bpmnElement="ConsultForErrorTask">
+        <dc:Bounds x="270" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1kjfhkv_di" bpmnElement="Gateway_1kjfhkv" isMarkerVisible="true">
+        <dc:Bounds x="425" y="152" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0qg9t7p_di" bpmnElement="IgnoredErrorEndEvent">
+        <dc:Bounds x="562" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="549" y="315" width="64" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_04vvewt_di" bpmnElement="ReportTheErrorTask">
+        <dc:Bounds x="530" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1n2eczv_di" bpmnElement="ResolvedErrorTask">
+        <dc:Bounds x="690" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_06eoe9f_di" bpmnElement="Gateway_06eoe9f" isMarkerVisible="true">
+        <dc:Bounds x="855" y="152" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1hu4bnk_di" bpmnElement="MigrateProcessTask">
+        <dc:Bounds x="830" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0pyls3a_di" bpmnElement="AvaliateResultTask">
+        <dc:Bounds x="1120" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0uw9p2p_di" bpmnElement="Gateway_0uw9p2p" isMarkerVisible="true">
+        <dc:Bounds x="1285" y="152" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1blh7bz_di" bpmnElement="Event_1blh7bz">
+        <dc:Bounds x="1402" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_12fwn41_di" bpmnElement="RetryIncidentsTask">
+        <dc:Bounds x="980" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
