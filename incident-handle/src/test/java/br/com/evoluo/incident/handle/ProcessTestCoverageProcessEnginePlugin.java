@@ -1,4 +1,4 @@
-package br.com.evoluo.best.practices.incident;
+package br.com.evoluo.incident.handle;
 
 import org.camunda.bpm.engine.impl.cfg.AbstractProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;

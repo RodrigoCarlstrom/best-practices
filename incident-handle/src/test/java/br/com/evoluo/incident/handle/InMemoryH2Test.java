@@ -1,39 +1,26 @@
-package br.com.evoluo.best.practices.incident;
-
-import javax.annotation.PostConstruct;
+package br.com.evoluo.incident.handle;
 
 import org.apache.ibatis.logging.LogFactory;
-import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
+import org.camunda.bpm.engine.test.mock.Mocks;
 import org.camunda.bpm.extension.process_test_coverage.junit.rules.TestCoverageProcessEngineRuleBuilder;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.junit4.SpringRunner;
 
+import br.com.evoluo.incident.handle.process.LoggerDelegate;
 import br.com.evoluo.incident.handle.process.ProcessConstants;
 
 import static org.camunda.bpm.engine.test.assertions.ProcessEngineTests.*;
 import static org.junit.Assert.*;
-import static org.assertj.core.api.Assertions.*;
-
 
 /**
  * Test case starting an in-memory database-backed Process Engine.
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class ProcessUnitTest {
-
-  @Autowired
-  private ProcessEngine processEngine;
+public class InMemoryH2Test {
 
   static {
     LogFactory.useSlf4jLogging(); // MyBatis
@@ -41,28 +28,24 @@ public class ProcessUnitTest {
 
   @ClassRule
   @Rule
-  public static ProcessEngineRule rule;
-
-  @PostConstruct
-  void initRule() {
-    rule = TestCoverageProcessEngineRuleBuilder.create(processEngine).build();
-  }
+  public static ProcessEngineRule rule = TestCoverageProcessEngineRuleBuilder.create().build();
 
   @Before
   public void setup() {
-    init(processEngine);
+    init(rule.getProcessEngine());
   }
 
   @Test
-  @Deployment(resources = "process.bpmn") // only required for process test coverage
+  @Deployment(resources = "process.bpmn")
   public void testHappyPath() {
     // Drive the process by API and assert correct behavior by camunda-bpm-assert
+
+    Mocks.register("logger", new LoggerDelegate());
 
     ProcessInstance processInstance = processEngine().getRuntimeService()
         .startProcessInstanceByKey(ProcessConstants.PROCESS_DEFINITION_KEY);
 
     assertThat(processInstance).isEnded();
-
   }
 
 }
